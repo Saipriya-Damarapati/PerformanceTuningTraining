@@ -1,0 +1,118 @@
+Task Manager -> Performance -> Open Resource Monitor
+
+java -Xms50m -Xmx200m  -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintGCDateStamps -XX:+PrintGCApplicationStoppedTime com.citi.training.gc.Test
+is equivalent to 
+java -Xms50m -Xmx200m -XX:+UseParallelGC -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintGCDateStamps -XX:+PrintGCApplicationStoppedTime com.citi.training.gc.Test
+
+The default GC algorithm in java 8 is parallel GC.
+
+
+Young space is given by --> PSYoungGen: 2035K->0K(14848K)
+Old space is given by --> ParOldGen:
+
+-XX:NewSize - specifies the initial and minimum size of young space
+-XX:MaxNewSixe - specifies the maximum size of young space
+
+-Xmn15m is equivalent to -XX:NewSize=15m -XX:MaxNewSize=15m (used if both min and max size needs to be same) -> use this to block size for young space and remaining will be alloted for old space
+
+-XX:NewRatio=n -> this is the ratio between young space and old space
+for example, if n=3, then the ratio is 1:3, means the size of young space is 1/4th of current heap size
+java -Xms100m -Xmx100m -XX:+UseSerialGC -XX:NewRatio=3 -XX:+PrintGCDetails  com.citi.training.gc.Test
+
+By default, 80% of young space is used by eden and remaining 20% equally shared by two survivor spaces
+
+Survivor Ratio:
+This is the ratio of each survivor space to the eden space size
+
+Survivor size: Total size of young space/(survivor ratio+2)
+
+if, -XX:SurvivorRatio=3, and if the young space size is 30m, then 30/(3+2) = 6m is the survivor space
+
+Memory Leak: When an object is no longer in use by an application but can't be garbage collected due to one or more reference variables holding a  reference to it, it is called a Memory Leak.
+
+There are thirs party tools to detect the memory leak. Some of these tools are 
+1. Eclipse MAT
+2. Yourkit
+3. JProfiler
+4. JProbe
+5. Netbeans Profiler
+
+Heap Dump is a binary file which represents the snapshot of all the objects in the heap.
+-------------------------------------------------------------------------------------------------------
+Creating heap dump by JVisualVM
+---------------------------------
+1. Right click on the remote process
+2. HeapDump, a file will be generated
+3. Save that file
+-------------------------------------------------------------------------------------------------------
+Creating heap dump by JMAP
+--------------------------
+1. Run the application
+2. Find the process id of the application using jps
+3. Create the heap dump using jmap
+cmd: jmap -dump:format=b,file=c:\heapdumps\third.hprof  7148
+-------------------------------------------------------------------------------------------------------
+Creating heap dump by JConsole
+-------------------------------
+1. Run the application
+2. Find the process id of the application using jps
+3. Open jconsole, new connection, select the process by checking the pid,open tab MBeans, com.sun.management, hotspot diagnostic, operations, dumpheap
+-------------------------------------------------------------------------------------------------------
+Creating heap dump for remote process JConsole (3 cmd prompts)
+--------------------------------------------------------------
+1. Run the application by making authentication false for testing purpose
+java -Xms100m -Xmx400m -Dcom.sun.management.jmxremote.port=1100 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false com.citi.training.gc.Test
+2. Find the process id of the application using jps
+3. Open jconsole using the command jconsole localhost:1100
+-------------------------------------------------------------------------------------------------------
+Creating heap dump from command prompt on error
+--------------------------------------------------------------
+HeapDump when running application -> -XX:+HeapDumpOnOutOfMemoryError
+-XX:+HeapDumpPath=directory -> creates the heap dump in specific directory (ensure that the directory is already existing and the process has access to the directory), 
+should be used only with -XX:+HeapDumpOnOutOfMemoryError
+examples: java -Xms100m -Xmx200m -XX:+UseSerialGC -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=c:\heapdump1 com.citi.training.gc.Test
+-------------------------------------------------------------------------------------------------------
+Reading heap dump files: EclipseMAT
+--------------------------------------
+- download from this https://www.eclipse.org/downloads/download.php?file=/mat/1.7/rcp/MemoryAnalyzer-1.7.0.20170613-win32.win32.x86_64.zip
+UI based, open leak suspect reports - at the end click on details to get the table
+-------------------------------------------------------------------------------------------------------
+Shallow heap size of an object is its size in the heap
+Retained heap size of an object is the amount of heap memory that will be freed when the object is garbage collected.
+
+class Address {
+}
+class Customer {
+private Customer customer;
+}
+
+Size of customer object excluding size of address object is called shallow heap size
+Size of customer object including size of address object is called retained heap size
+-------------------------------------------------------------------------------------------------------
+Reading heap dump files: JHAT in JDK 
+-------------------------------------
+Java heap analyzer tool (Non UI based)
+syntax: jhat {hprof_path}
+once it displays started httpserver on port 7000, server ready
+then click http://localhost:7000/
+click on Show instance counts for all classes (excluding platform)
+-------------------------------------------------------------------------------------------------------
+JVM arguments
+-----------------------
+-Xlowercase -> shortcut for some of the options of -XX:
+-XX -> Extended options for the JVM (will have an = symbol for giving some value to the option)
+-XX:+option or -XX:-option -> enabling or disabling an option
+-XX:+DisableExplicitGC - disabling explicit GC
+-------------------------------------------------------------------------------------------------------
+JConsole:
+-----------
+JMX - Java Management Extensions - API used to monitor java applications
+MBeans - Managed Beans - Java classes developed using JMX API
+JConsole is a JMX based tool to monitor the JVM.
+-------------------------------------------------------------------------------------------------------
+MBeans
+--------
+Predefined class: MBeanServer
+Use predefined MBeanClass and MBeanInterface
+For creating MBean, we can extend/implement and deploy it in MBeanServer
+-------------------------------------------------------------------------------------------------------

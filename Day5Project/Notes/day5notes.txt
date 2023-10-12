@@ -1,0 +1,121 @@
+G1GC----------Garbage First GC:
+
+
+
+
+G1 GC is regionalized.
+
+2048 small regions of equal size are created.
+
+Eden, survivor and old space are logical sets of these regions and are not contiguous.
+
+For example if the heap size is 2gb, the size of each region is 1 mb.
+
+
+Humongous objects are objects that are bigger than half of region size. Least preference will be given to garbage collect this region.
+
+
+
+Based on the concept, clean the area where the garbage is more.
+
+
+
+
+
+
+class X{
+	private List<String> list=...................;
+
+
+	void test()
+	{
+	List<String> l=........................
+
+	...........................
+	}
+}
+
+
+
+int[] a=new int[5];
+
+a=new int[10];
+
+
+class Address{
+}
+
+class Customer{
+	private int id;
+	private String name;
+	private Address address=new Address();
+
+
+
+	
+}
+
+
+class P{
+	public void finalize()
+	{
+	}
+}
+
+
+P p1=new P();
+P p2=p1;
+p1=new P();
+.
+.
+.
+
+No gurantee or oder of invoking finalize .
+
+
+
+When a soft reference is created for an object , you are informing the jvm that don't garbage collect the object immediately, even though no reference is 
+available for this object.
+Garbage collect the object obnly when there is no sufficient memory.
+
+Pooling of objects , is achieved with soft reference.
+
+Thread pool and DB connection pool are implemented through soft references.
+
+
+String s="hello";
+
+s= null;
+String s1="hello"; //implemented using soft reference
+
+Phantom reference can be used as a replacement for finalizer block.
+
+
+
+Steps :
+
+1. Disable Explicit GC
+2. Find out memory leaks and address them.
+3. Do a cpu profiling for methods , find out the methods which take more time and address them.
+4. Find out if there are deadlocks in threads and address them.
+5. If there are frequent minor gcs, adjust the NewRatio parameter, to increase the size of Young space.
+6. Find tune the jit compiler if there is no sufficient space for code cache.
+7. Modify the code whereever possible.
+
+
+periasamy.subramanian@gmail.com
+9880372634
+
+
+
+
+
+
+
+
+
+
+
+
+
+

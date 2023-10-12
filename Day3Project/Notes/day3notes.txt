@@ -1,0 +1,104 @@
+ThreadDump:
+-----------
+Thread dump is a physical snapshots of all threads running in the JVM
+
+Most common extension for the file name is tdump
+
+Mainly for deadlock situation in multi threading
+When two threads try to acquire the lock from each other, it is a deadlock situation.
+
+thread 1:
+-----------
+synchronized(obj1) {
+	synchronized(obj2) {
+	}
+}
+
+thread 2:
+-----------
+synchronized(obj2) {
+	synchronized(obj1) {
+	}
+}
+-------------------------------------------------------------------------------------------------------------------
+Read info about threads and deadlock: JConsole
+------------------------------------
+Select the process, open threads tab
+-------------------------------------------------------------------------------------------------------------------
+Creating thread dump from jvisualvm:
+------------------------------
+Select the process and click on create thread dump
+-------------------------------------------------------------------------------------------------------------------
+Create thread dump using jstack
+------------------------------
+jstack is a command line tool used to create thread dumps
+syntax: jstack $pid > $file_name.tdump
+-------------------------------------------------------------------------------------------------------------------
+Download the jar from https://www.ibm.com/support/pages/ibm-thread-and-monitor-dump-analyzer-java-tmda
+Opening thread dump from IBM Thread dump tool:
+java -jar jca*.jar
+
+Open thread dump from file tab
+M symbol next to pie chart symbol, (Method Analysis)
+-------------------------------------------------------------------------
+Avoiding deadlocks:
+--------------------
+1. Deciding the order in which to obtain locks
+2. Adhering to this order through out
+3. Releasing the locks in reverse order
+
+thread 1:
+-----------
+synchronized(obj1) {
+	......
+	synchronized(obj2) {
+	..........
+	}
+}
+
+thread 2:
+-----------
+synchronized(obj1) {
+	synchronized(obj2) {
+	}
+}
+
+==========================================================================================================================
+CPU PROFILING
+======================
+CPU profiler shows time taken to execute each method. 
+This information can provide you a better understanding of how your application is executed and how exactly yje resources are allocated.
+Once the analysis is finished, it may als give the percentage of time allocated to each method.
+
+Use jvisualvm
+---------------
+select the process and then click on sampler/profiler, then click on CPU
+------------------------------------------------------------------------------------------------
+Use command line
+----------------
+Syntax: java -agentlib:hprof=cpu=samples com.citi.training.cpuprofile.CPUProfileTest
+a new file called java.hprof.txt will be created
+------------------------------------------------------------------------------------------------
+Sampling vs Profiling
+-----------------------
+Sampling means analyzing the stack traces with some sample data, not very accurate, faster than profiling.
+Profiling means it does instrumentation on the classes and methods to get very accurate data.
+Java Instrumentation: (Injecting the byte code) it provides the ability to add byte code to existing compiled java classes.
+This profiler uses javaagent to modify the byte code allowing us to perform method profiling or memory profiling.
+
+Performance Monitoring -> collecting performance metrics non intrusively. (will not have any negative impact on the performance of running app)
+Performance Profiling -> collecting performance metrics intrusively.
+------------------------------------------------------------------------------------------------
+Netbeans for download: https://netbeans-ide.informer.com/download/?ca10c85e
+Netbeans is better tool compared to others, profiling is good in most of the commercial tools compared to open source tools.
+Profiling will add some byte code to get the accurate results and this affects the performance of the application.
+-----------------------------------------
+Instructions for profiling in netbeans:
+-----------------------------------------
+1. Select Profile tab
+2. Profile Project (our project name)
+3. In Configure Session - select methods
+4. Click on Profile button with run symbol in the newly opened window
+5. Select the java class containing the main method.
+6. It will run our main method java class and gives instrumented output.
+------------------------------------------------------------------------------------------------

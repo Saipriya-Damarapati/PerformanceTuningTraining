@@ -1,0 +1,8 @@
+Heap space is divided into 2 major regions called Young region and tenured region or old region.
+20-30% is young region and 70-80% is old region.
+
+Young region contains newly created objects
+Tenured region contains older objects (objects that have survived some number of GCs)
+
+
+if number of times gc happens is high, then performance of the application is low.

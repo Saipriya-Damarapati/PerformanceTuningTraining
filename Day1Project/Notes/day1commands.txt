@@ -1,0 +1,227 @@
+package com.citi.training;
+
+public class Sample {
+    private int i;
+
+    public Sample(int i) {
+        super();
+        this.i = i;
+    }
+
+    public int getI() {
+        return i;
+    }
+
+    public void setI(int i) {
+        this.i = i;
+    }
+
+    @Override
+    public String toString() {
+        return "Sample [i=" + i + "]";
+    }
+    
+    
+
+}
+
+
+
+
+package com.citi.training;
+
+public class GCTest1 {
+
+    public static void main(String[] args) {
+        // TODO Auto-generated method stub
+        Sample sample1=new Sample(10);
+        Sample sample2=sample1;//both sample1 and sample2 reference variables point to the object Sample(10)
+        sample1=null;//sample1 does not point to any object----still sample2 variable point to the object Sample(10) 
+        Sample sample3=new Sample(20);//sample3 refers to Sample(20)
+        sample2=sample3;//both sample2 and sample 3 refer to Sample(20)----after this line Sample(10) 
+        //eligible for cc
+        sample3=sample1;//both sample1 and sample3 do not refer to any object
+        sample2=new Sample(30);//sample2 refers Sample(30) , Sample(20) is refered by
+        //any object and so becomes eligible for GC
+        System.gc();//manually triggering gc ---not a guaranteed behavior---may or may not trigger gc
+        
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+        
+                
+
+    }
+
+}
+
+
+
+
+package com.citi.training;
+
+public class Sample {
+    private int i;
+
+    public Sample(int i) {
+        super();
+        this.i = i;
+    }
+
+    public int getI() {
+        return i;
+    }
+
+    public void setI(int i) {
+        this.i = i;
+    }
+
+    @Override
+    public String toString() {
+        return "Sample [i=" + i + "]";
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        // TODO Auto-generated method stub
+        System.out.println("Garbage collecting the object with value: "+i);
+    }
+    
+    
+
+}
+
+
+
+package com.citi.training.memoryleak;
+
+public class Point {
+    private int x;
+    private int y;
+    public Point(int x, int y) {
+        super();
+        this.x = x;
+        this.y = y;
+    }
+    
+    
+}
+
+
+
+package com.citi.training.memoryleak;
+
+public class Graph {
+        private Point[] points;
+
+        public Graph(Point[] points) {
+            super();
+            this.points = points;
+        }
+
+        @Override
+        public String toString() {
+            return "Graph [points=" + points.length + "]";
+        }
+        
+
+}
+
+
+
+package com.citi.training.memoryleak;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class GraphUtility {
+    private List<Graph> graphs=new ArrayList<>();
+    
+    public void addGraph(Graph g)
+    {
+        graphs.add(g);
+    }
+    
+    public void removeGraph(Graph g)
+    {
+        graphs.remove(g);
+    }
+    
+    public void processGraph(Graph g)
+    {
+        graphs.add(g);
+        System.out.println("processing "+g);
+        try {
+            Thread.sleep(10);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        System.out.println("completed processing "+g);
+        //graphs.remove(g);---------intentional to trigger gc
+    }
+
+}
+
+
+
+package com.citi.training.gc;
+
+public class Test {
+
+    public static void main(String[] args) {
+        // TODO Auto-generated method stub
+        GraphUtility utility=new GraphUtility();
+        for(int i=1;i<=500;i++) {
+            Point[] points=new Point[i*100];
+            for(int j=0;j<points.length;j++) {
+                points[j]=new Point(i*2, j*5);
+                
+            }
+            Graph graph=new Graph(points);
+            utility.processGraph(graph);
+        }
+
+    }
+
+}
+
+
+
+java -Xms50m -Xmx100m com.citi.training.gc.Test
+
+
+java -Xms50m -Xmx100m -XX:+UseSerialGC -XX:+PrintGCDetails com.citi.training.gc.Test
+
+
+java -Xms50m -Xmx200m -XX:+UseSerialGC -XX:+PrintGCDetails -XX:+PrintGCTimeStamps com.citi.training.gc.Test
+
+java -Xms50m -Xmx200m -XX:+UseSerialGC -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintGCDateStamps com.citi.training.gc.Test
+
+java -Xms50m -Xmx200m -XX:+UseSerialGC -Xloggc:c:/gclogs/testgc.log com.citi.training.gc.Test
+
+java -Xms50m -Xmx200m -XX:+UseSerialGC -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintGCDateStamps -Xloggc:c:/gclogs/testgc1.log com.citi.training.gc.Test
+
+
+jps -l
+
+jvisualvm
+
+
+java -Xms50m -Xmx200m -XX:+UseSerialGC com.citi.training.gc.Test
+
+
+
+
+
+java -Xms50m -Xmx200m -XX:+UseSerialGC -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintGCDateStamps -XX:+PrintGCApplicationStoppedTime com.citi.training.gc.Test
+
+
+https://drive.google.com/drive/folders/1Y3LtUiyDkCiWJ3yRv3RLapI-erQVullu?usp=sharing
+
+
+

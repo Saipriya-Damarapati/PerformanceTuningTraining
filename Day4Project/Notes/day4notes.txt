@@ -1,0 +1,133 @@
+JIT compilation :: Just In Time Compilation
+--------------------------------------------
+JIT compiler interacts with the JVM at runtime and compile suitable bytecode sequences into native machine code.
+While using a JIT compiler, the hardware is able to execute the native code, as compared to having the JVM interpreting the same sequence of bytecode repeatedly and incurring overhead for the translation process.
+ 
+Some of the optimizations done by JIT compiler:
+1. reduction of memory access by register allocation
+2. translation from stack operation to register operation
+3. elimination of common expressions
+
+Optimization is level measured in degrees, The value of this degree is 1 to 4.
+4 denotes the highest level of optimization, it moves the code to a special place called code cache.
+---------------------------------------------------------------------------------------------------------------------------
+-XX:+PrintCompilation :: Prints all the JIT compiled methods
+java -XX:+PrintCompilation com.citi.training.jit.PrimeTest 500
+
+Print Compilation output:
+--------------------------------
+C:\Users\Sai Priya\Study\eclipse-workspace\Day4Project\bin>java -XX:+PrintCompilation com.citi.training.jit.PrimeTest 300
+    172    1       3       java.lang.String::hashCode (55 bytes)
+    176    2       3       java.lang.String::charAt (29 bytes)
+    178    4       3       java.lang.CharacterData::of (120 bytes)
+    180    7     n 0       java.lang.System::arraycopy (native)   (static)
+    182    3       3       java.lang.Character::toLowerCase (9 bytes)
+    184    5       3       java.lang.CharacterDataLatin1::toLowerCase (39 bytes)
+    186    6       3       java.lang.CharacterDataLatin1::getProperties (11 bytes)
+    188    9       3       java.lang.String::equals (81 bytes)
+    190    8       3       java.lang.String::length (6 bytes)
+    192   10       3       java.lang.Object::<init> (1 bytes)
+    195   11       3       java.lang.String::indexOf (70 bytes)
+    197   12       3       java.lang.AbstractStringBuilder::ensureCapacityInternal (27 bytes)
+    200   13       3       java.lang.AbstractStringBuilder::append (29 bytes)
+    203   15       3       java.io.WinNTFileSystem::isSlash (18 bytes)
+    204   16       3       java.lang.StringBuilder::append (8 bytes)
+    207   17  s    3       java.lang.StringBuffer::append (13 bytes)
+    210   14       3       java.lang.String::getChars (62 bytes)
+    212   18       3       java.lang.Math::min (11 bytes)
+    216   19       3       java.util.Arrays::copyOfRange (63 bytes)
+    223   20       4       java.lang.String::charAt (29 bytes)
+    225   21       3       com.citi.training.jit.PrimeNumbers::isPrime (23 bytes)
+    227   22       1       java.util.ArrayList::size (5 bytes)
+    228   23 %     4       com.citi.training.jit.PrimeNumbers::isPrime @ 5 (23 bytes)
+    230    2       3       java.lang.String::charAt (29 bytes)   made not entrant
+    233   24       3       java.lang.Number::<init> (5 bytes)
+    235   25       3       java.lang.Integer::<init> (10 bytes)
+    237   26       3       java.util.ArrayList::add (29 bytes)
+    240   29       4       com.citi.training.jit.PrimeNumbers::isPrime (23 bytes)
+    241   28       3       com.citi.training.jit.PrimeNumbers::getNextPrimeAbove (20 bytes)
+    243   30       1       java.util.ArrayList::access$000 (5 bytes)[2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79,
+ 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241,
+ 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397, 401, 409, 419, 421, 431, 4
+33, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499, 503, 509, 521, 523, 541, 547, 557, 563, 569, 571, 577, 587, 593, 599, 601, 607, 613, 617, 619
+, 631, 641, 643, 647, 653, 659, 661, 673, 677, 683, 691, 701, 709, 719, 727, 733, 739, 743, 751, 757, 761, 769, 773, 787, 797, 809, 811, 821, 823, 827,
+829, 839, 853, 857, 859, 863, 877, 881, 883, 887, 907, 911, 919, 929, 937, 941, 947, 953, 967, 971, 977, 983, 991, 997, 1009, 1013, 1019, 1021, 1031, 10
+33, 1039, 1049, 1051, 1061, 1063, 1069, 1087, 1091, 1093, 1097, 1103, 1109, 1117, 1123, 1129, 1151, 1153, 1163, 1171, 1181, 1187, 1193, 1201, 1213, 1217
+, 1223, 1229, 1231, 1237, 1249, 1259, 1277, 1279, 1283, 1289, 1291, 1297, 1301, 1303, 1307, 1319, 1321, 1327, 1361, 1367, 1373, 1381, 1399, 1409, 1423,
+1427, 1429, 1433, 1439, 1447, 1451, 1453, 1459, 1471, 1481, 1483, 1487, 1489, 1493, 1499, 1511, 1523, 1531, 1543, 1549, 1553, 1559, 1567, 1571, 1579, 15
+83, 1597, 1601, 1607, 1609, 1613, 1619, 1621, 1627, 1637, 1657, 1663, 1667, 1669, 1693, 1697, 1699, 1709, 1721, 1723, 1733, 1741, 1747, 1753, 1759, 1777
+, 1783, 1787, 1789, 1801, 1811, 1823, 1831, 1847, 1861, 1867, 1871, 1873, 1877, 1879, 1889, 1901, 1907, 1913, 1931, 1933, 1949, 1951, 1973, 1979, 1987,
+1993]
+    248   21
+      3       com.citi.training.jit.PrimeNumbers::isPrime (23 bytes)   made not entrant
+    250   33       1       java.lang.Object::<init> (1 bytes)
+ 
+ The first column is the timestamp
+ The second column is the compilation id and method attributes.
+ 
+ 	Method attributes: 
+ 	--------------------
+ 		n denotes native method
+ 		s denotes synchronized method
+ 		% denotes method has been optimized and moved to code cache.
+ 		! denotes method contains an exception handler
+ 		
+ 	osr - On Stack Replacement (in the stack itself, the original code is replaced with optimized compiled code. (highest degree of optimization)
+ 	--------------------------------------------------------------------
+The third column is the qualified method name.
+The fourth column is the optimization level. (1,2,3 first level of compilation and 4 means more optimized code highest level of compilation) 
+The fifth column is (n bytes) is the size of the compiled unit.
+
+Sometimes the method may be compiled more than once, 
+reasons: the first one is an OSR compilation which happened while the loop was running due to warm up code and the next compilations are JIT compilations to futher optimize the compiled code.
+
+after highest optimization of the compiled code, futher compilations are invalid and marked made not entrant.
+
+========================================================================================================================
+Code cache:
+------------
+is an area where JVM stores its byte code compiled with high optimization into native code.
+Code cache is outside JVM heap.
+------------------------------------------------
+Code cache has its own size
+--------------------------
+Default size is 25MB
+
+-XX:+PrintCodeCache :: To print code cache size details
+-XX:InitialCodeCacheSize - the initial code cache size
+-XX:ReservedCodeCacheSize - the reserved code cache size
+-XX:CodeCacheExpansionSize - every time how much size to increase
+
+C:\Users\Sai Priya\Study\eclipse-workspace\Day4Project\bin>java -XX:+PrintCodeCache com.citi.training.jit.PrimeTest 300
+CodeCache: size=245760Kb used=1128Kb max_used=1134Kb free=244631Kb
+ bounds [0x0000005380000000, 0x0000005380270000, 0x000000538f000000]
+ total_blobs=270 nmethods=38 adapters=146
+ compilation: enabled
+ 
+C:\Users\Sai Priya\Study\eclipse-workspace\Day4Project\bin> java -XX:+PrintCodeCache -XX:ReservedCodeCacheSize=28m com.citi.training.jit.PrimeTest 1000
+ CodeCache: size=28672Kb used=1141Kb max_used=1141Kb free=27530Kb
+ bounds [0x000000d243130000, 0x000000d2433a0000, 0x000000d244d30000]
+ total_blobs=278 nmethods=46 adapters=146
+ compilation: enabled
+-------------------------------------------------
+-XX:+UnlockDiagnosticVMOptions :: Used to unlock diagnostic operations tools
+java -XX:+UnlockDiagnosticVMOptions -XX:+LogCompilation com.citi.training.jit.PrimeTest 300
+-----------------------------------------------------------------------------------------------
+C1 and C2 compilers (During runtime):
+----------------------
+(At the time of execution, converting byte code into native machine code), this is not related to java compilation
+C1 compiler starts compiling the code as soon as the application starts and the C2 compiler will observe the code execution for quite sometime.
+C1 does the first level of optimization, 
+Based on the execution knowledge it gains, C2 compiler tries to compile the same code and the output produced by C2 will be superior than the code prodcued by C1 compiler.
+Check C:\Users\Sai Priya\Study\eclipse-workspace\Day4Project\bin\hotspot_pid4836.txt
+========================================================================================================================
+JDK Mission Control (JMC) & Java Flight Recorder (JFR)
+-------------------------------------------------------
+JMC and JFR together create a complete tool chain to continuously collect low level and detailed run time information enabling complete view of the JVM
+download from : https://download.java.net/java/GA/jmc8/03/binaries/jmc-8.2.1_windows-x64.zip
+JFR: monitoring tool which collects information about the events in a JVM during the execution of a java application.
+JMC: helps us to visualize the data recorded by JFR in an intuitive way.
+
+-XX:+FlightRecorder -XX:StartFlightRecording=duration=50s,filename=flight.jfr
+
+-XX:+FlightRecorder -XX:StartFlightRecording=duration=50s,filename=flight.jfr

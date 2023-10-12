@@ -1,0 +1,49 @@
+-Xms50m -Xmx100m -XX:+UseSerialGC -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintGCDateStamps -Xloggc:B:\Study\eclipse-workspace\Day1Project\output\com_citi_training_gc\X_TestMain.txt
+
+-Xms50m is a shortcut for -XX:InitialHeapSize=50m
+-Xmx100m is a shortcut for -XX:MaxHeapSize=100m
+-XX:+UseSerialGC is used to 
+-XX:+PrintGCDetails is used to print the gc details
+-XX:+PrintGCTimeStamps 
+-XX:+PrintGCDateStamps 
+-XX:+PrintGCApplicationStoppedTime
+-Xloggc:
+------------------------------------------------------
+-Xms = minimum heap size
+-Xmx = maximum heap size
+
+The default minimum heap size = 1/16th of RAM size
+The default maximum heap size = 1/4th of RAM size
+
+------------------------------------------------------
+Minor GC example log:
+---------------------
+[GC (Allocation Failure) 	[DefNew: 13696K->1664K(15360K), 0.0642260 secs] 13696K->13144K(49536K), 0.0643809 secs] 
+							[Times: user=0.06 sys=0.00, real=0.07 secs]
+
+GC means Minor GC
+DefNew - size of young space							
+[DefNew: 13696K->1664K(15360K) 
+Before GC size -> After GC size (allocated size)
+------------------------------------------------------
+Minor GC has inturn triggered a major GC example log:
+because the old space was not sufficient to hold the objects that moved from survivor space
+------------------------------------------------------
+[GC (Allocation Failure) [DefNew: 15360K->1664K(15360K), 0.0698393 secs][Tenured: 38771K->38771K(38784K), 0.1970802 secs] 40478K->40435K(54144K), [Metaspace: 2530K->2530K(1056768K)], 0.2673435 secs] [Times: user=0.27 sys=0.00, real=0.27 secs]
+
+[GC (Allocation Failure) 	[DefNew: 15360K->1664K(15360K), 0.0698393 secs]
+							[Tenured: 38771K->38771K(38784K), 0.1970802 secs] 40478K->40435K(54144K), 
+							[Metaspace: 2530K->2530K(1056768K)], 0.2673435 secs] 
+							[Times: user=0.27 sys=0.00, real=0.27 secs]
+							 
+Tenured: 38771K->38771K(38784K)
+size of all objects in old space beofre GC -> size of all objects in old space after GC (total space allocated for old space)
+
+40478K->40435K(54144K)
+total size of all objects in heap space before GC -> total size of all objects in heap space after GC
+
+Metaspace: 2530K->2530K(1056768K)
+
+
+jvisualvm is a tool for GUI purpose where you can view various JVM regions visually.
+open at C:\Program Files\Java\jdk1.8.0_261\bin\jvisualvm

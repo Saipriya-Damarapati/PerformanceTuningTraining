@@ -1,0 +1,55 @@
+cd open the directory, JDK Misson Control under the installed software.
+
+path=C:\Program Files\Java\jdk-11.0.14\bin";%path%
+jmc
+
+this opens JMC
+==============================================================================================================================
+Day 5 Notes
+------------
+Using Concurrent Mark Sweep GC
+java -XX:+PrintGCDetails -XX:+UseConcMarkSweepGC com.citi.training.gc.Test
+java -XX:+PrintGCDetails -XX:+UseConcMarkSweepGC -XX:+PrintSafepointStatistics com.citi.training.gc.Test
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+G1GC :: Garbage first GC : clean the area where the garbage is more.
+----------------------------------------------------------------------
+This divides the entire heap into smaller regions and enabling the G1 GC to select a small group of regions to collect and finish quickly.
+If a region is scheduled for garbage collection, all surviving objects will be copied from the collected region to an unassigned region.
+
+Assuming that the collection region was of the eden space, the unassigned region holding all surviving objects will then become a survivor region.
+Ideally if a region is full of garbage (i.e. it does not have a single survivor object), then the region is declared unassigned region.
+
+clean the area where the garbage is more.
+
+Command: java -XX:+PrintGCDetails -XX:+UseG1GC  com.citi.training.gc.Test
+
+G1 GC is regionalized, 2048 small regions of equal size are created.
+Eden, survivor and old space are logic sets of these regions and are not continuous.
+------------------------------------------------------------------------------------------------------------------------------------------------
+Humongous Objects:
+--------------------
+G1 divides the whole heap into smaller regions, The goal is to have 2048 regions.
+For 2GB heap size, if there are 2048 regions, then each region size is 1MB.
+
+Command: java -Xms2g -Xmx2g -Xlog:gc+heap -version
+=================================================================================================================================================
+Object Allocation :: Best Practices (Page 220)
+------------------------------------------------
+1. Use short-lived immutable objects instead of long-lived mutable objects.
+
+class X {
+	private List<String list = .....; (long lived object, having references in almost all the methods)
+	
+	void test () {
+		List<String> list1 = ........; (short lived object, eligible for GC after method execution is over)
+	}
+}
+Pg.181 --> for study
+Pg.221 --> Large objects are expensive to allocate and initialize.
+Pg.164 --> Compaction
+
+Pg.223 --> Data Structure sizing
+
+
+Fragmentation : Large objects of different sizes can cause fragmentation

@@ -1,0 +1,98 @@
+JRE :: Java Runtime Environment.
+
+The platform independence of Java is achieved through a platform dependent JRE.
+
+JRE = JVM + System Libraries.
+
+JVM :: Java Virtual Machine :: Interpreter which converts the java byte code to runtime instructions.
+
+JVM vendors:
+---------------
+1. Oracle JVM
+2. JRockit
+3. IBM JVM
+4. Azul JVM
+============================================================================================================
+JIT :: Just Intime Compiler :: Executes the frequently executed block/method as a single runtime instruction.
+
+Performance Monitoring :: collecting performance metrics non intrusively (will not have any negative impact on the performance of running app)
+Performance Profiling :: collecting performance metrics intrusively.
+
+Unreferenced object :: object which is not refered by any reference variable.
+
+Sample sample1=new Sample(10); is equivalent to the following 2 statements.
+Sample sample1;//declare sample1 as a reference variable.
+sample1=new Sample(10);//create the sample object and assign it to sample1.
+
+finalize() method defined in object class gets automatically invoked after the object is garbage collected
+============================================================================================================
+Heap is divided into 2 major regions :: Young Space and Tenured Space.
+
+In the total heap size, 20-30% space is used by Young Region 
+					and 70-80% space is used by Tenured or Old region.
+
+Young Region contains newly created objects.
+Tenured Region contains older objects(Objects which have survived some number of GCs).
+------------------------------------------------------------------------------------------------
+Young space:
+---------------
+Eden+s0+s1 is part of Young Space.
+	s0 and s1 are collectively called survivor spaces.
+70% of young space is occupied by eden and remaining 30% is equally divided between s0 and s1.
+-------------------------------------------------------------------------------------------------
+Metaspace:
+--------------
+The Meta Space(Perm in older versions) contains the class definitions.
+============================================================================================================
+GC Process
+-----------
+Minor GC :: Young GC :: peforms GC of young space; Young GC(minor gc) is triggered when eden becomes full.
+Major GC :: Full GC :: performs GC of both young and old spaces and also the meta space; Full GC(major gc) is triggered when old space becomes full.
+
+At the end of each minor gc, the eden space and one of the survivor spaces will be empty.
+
+MaxTenuringAge :: The age of the object after which it is moved from survivor(young) space to old space
+-------------------------------------------------------------------------------------------------
+The default minimum heap size---------------1/16th of RAM size
+The default maximum heap size---------------1/4th of RAM size
+
+-Xms50m is a short cut for -XX:InitialHeapSize=50m
+-Xmx100m is a short cut for -XX:MaxHeapSize=100m
+
+java -Xms50m -Xmx100m com.citi.training.gc.Test
+
+-Xms -> minimum heap size
+-Xmx -> maximum heap size
+
+-XX:+UseSerialGC -> Uses Serial GC -> runs GC as a single thread.
+-XX:+PrintGCDetails -> Prints the Garbage Collection Details in the console.
+============================================================================================================
+Interpreting GC Logs:
+------------------------
+[GC (Allocation Failure) [DefNew: 15360K->1664K(15360K), 0.0502525 secs] 26835K->26778K(49536K), 0.0508532 secs] 
+GC--------------Minor GC
+DefNew-------------Size of the Young space
+DefNew: 15360K->1664K(15360K)----------The total allocated space for young space is 15360k.
+15360K->1664K(15360K)
+Before GC size->After GC Size(Allocated Size)
+
+[GC (Allocation Failure) 	[DefNew: 15360K->1664K(15360K), 0.0526042 secs]
+							[Tenured: 38767K->38767K(38784K), 0.1103159 secs] 40474K->40431K(54144K), 
+							[Metaspace: 2592K->2592K(1056768K)]
+The above output shows that a minor gc has also triggered a major gc 
+because the old space was not sufficient to hold the objects moved from the survivor space.
+
+Tenured: 38767K->38767K(38784K),
+size of all objects in  old before GC--->size of all objects in old after GC(total space allocated for old space)
+40474K->40431K(54144K)
+total size of all objects in heap before gc-->total size of  all objects in heap after gc(total size of gc)
+
+Metaspace: 2592K->2592K(1056768K)
+size of all class objects in meta space before GC-->size of all class object in meta space after gc(Total allocated size of Meta)
+============================================================================================================
+
+jvisualvm :: gui based tool where you van view various jvm regions visually.
+
+jps :: lists the java processes along with the process id.
+jps -l :: lists the java process with the process id along with the fully qualified name of the class.
+============================================================================================================
